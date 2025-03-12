@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"example.com/golang_sqlite_api/models"
@@ -29,10 +30,14 @@ func createEvent(context *gin.Context) {
 	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
+		fmt.Println("Error: ", err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request"})
 	}
 
 	event.ID = 1
 	event.UserID = 1
+
+	event.Save()
+
 	context.JSON(http.StatusCreated, gin.H{"message": "event created!", "event": event})
 }
