@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"example.com/golang_sqlite_api/db"
 	"example.com/golang_sqlite_api/models"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	db.InitDB()
 	server := gin.Default()
 
 	server.GET("/events", getEvents)
