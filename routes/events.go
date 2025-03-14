@@ -85,4 +85,12 @@ func updateEvent(context *gin.Context) {
 		return
 	}
 
+	updatedEvent.ID = eventId
+	err = updatedEvent.Update()
+	if err != nil {
+		fmt.Print("Error: ", err)
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not update the event"})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"message": "event updated successfully"})
 }
