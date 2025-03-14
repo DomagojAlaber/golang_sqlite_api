@@ -32,7 +32,6 @@ func createTables() {
 		location    TEXT NOT NULL,
 		dateTime    DATETIME NOT NULL,
 		user_id     INTEGER
-
 	)
 	`
 
