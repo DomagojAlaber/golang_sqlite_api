@@ -104,7 +104,7 @@ func deleteEvent(context *gin.Context) {
 		return
 	}
 
-	_, err = models.GetEventByID(eventId)
+	event, err := models.GetEventByID(eventId)
 
 	if err != nil {
 		fmt.Print("Error: ", err)
@@ -112,23 +112,33 @@ func deleteEvent(context *gin.Context) {
 		return
 	}
 
+	err = event.Delete()
+
+	if err != nil {
+		fmt.Print("Error: ", err)
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not delete the event"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "event deleted successfully"})
 }
 
-func checkIfEventExists(eventId int64, context *gin.Context) error {
+func checkIfEventExists(eventId int64, context *gin.Context) (*models.Event, error) {
 	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request"})
-		return err
+		return nil, err
 	}
 
-	_, err = models.GetEventByID(eventId)
+	event, err := models.GetEventByID(eventId)
 
 	if err != nil {
 		fmt.Print("Error: ", err)
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch the event"})
-		return err
+		return nil, err
 	}
-	return err
+
+	return event, nil
 }
