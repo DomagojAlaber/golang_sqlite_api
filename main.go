@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"example.com/golang_sqlite_api/db"
 	"example.com/golang_sqlite_api/models"
@@ -32,7 +33,22 @@ func getEvents(context *gin.Context) {
 }
 
 func getEventByID(context *gin.Context) {
+	eventId, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
+	if err != nil {
+		fmt.Println("Error: ", err)
+		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request"})
+		return
+	}
+
+	event, err := models.GetEventByID(eventId)
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+		context.JSON(http.StatusBadRequest, gin.H{"message": "could not fetch event"})
+	}
+
+	context.JSON(http.StatusOK, event)
 }
 
 func createEvent(context *gin.Context) {
@@ -44,7 +60,6 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request"})
 	}
 
-	event.ID = 1
 	event.UserID = 1
 
 	err = event.Save()
