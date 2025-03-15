@@ -13,7 +13,7 @@ type User struct {
 	Password string `binding:"required"`
 }
 
-func (user User) Save() error {
+func (user *User) Save() error {
 	query := `
 	INSERT INTO user (email, password)
 	VALUES (?, ?)
@@ -44,7 +44,7 @@ func (user User) Save() error {
 	return err
 }
 
-func (user User) ValidateCredentials() error {
+func (user *User) ValidateCredentials() error {
 	retrievedPassword, err := user.bindUser()
 
 	if err != nil {
