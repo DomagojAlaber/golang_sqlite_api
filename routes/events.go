@@ -47,7 +47,12 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	err := utils.VerifyToken(token)
+	userId, err := utils.VerifyToken(token)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "not authorized"})
+		return
+	}
 
 	var event *models.Event
 	err = context.ShouldBindJSON(&event)
@@ -57,8 +62,7 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request"})
 	}
 
-	event.UserID = 1
-
+	event.UserID = userId
 	err = event.Save()
 
 	if err != nil {
