@@ -1,6 +1,9 @@
 package models
 
-import "example.com/golang_sqlite_api/db"
+import (
+	"example.com/golang_sqlite_api/db"
+	"example.com/golang_sqlite_api/utils"
+)
 
 type User struct {
 	ID       int64  ``
@@ -21,7 +24,13 @@ func (user User) Save() error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(user.Email, user.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
+
+	if err != nil {
+		return err
+	}
+
+	result, err := stmt.Exec(user.Email, hashedPassword)
 
 	if err != nil {
 		return err
