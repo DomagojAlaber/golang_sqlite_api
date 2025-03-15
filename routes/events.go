@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"example.com/golang_sqlite_api/models"
+	"example.com/golang_sqlite_api/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,8 +47,10 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
+	err := utils.VerifyToken(token)
+
 	var event *models.Event
-	err := context.ShouldBindJSON(&event)
+	err = context.ShouldBindJSON(&event)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
