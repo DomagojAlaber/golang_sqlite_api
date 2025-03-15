@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"example.com/golang_sqlite_api/db"
 	"example.com/golang_sqlite_api/utils"
 )
@@ -40,4 +42,26 @@ func (user User) Save() error {
 
 	user.ID = userId
 	return err
+}
+
+func (user User) ValidateCredentials() error {
+	query := `
+	SELECT password FROM user WHERE email = ?
+	`
+	row := db.DB.QueryRow(query, user.Email)
+
+	var retrievedPassword string
+	err := row.Scan(&retrievedPassword)
+
+	if err != nil {
+		return errors.New("Credentials invalid")
+	}
+
+	isValid := utils.CheckPassword(user.Password, retrievedPassword)
+
+	if !isValid {
+		return errors.New("could not validate user")
+	}
+
+	return nil
 }
